@@ -54,13 +54,13 @@ export const ScheduleEditor: React.FC<ScheduleEditorProps> = ({ companyId }) => 
 
       if (data && data.length > 0) {
         const scheduleMap = new Map(data.map(s => [s.day_of_week, s]));
-        setSchedules(schedules.map(s => {
+        setSchedules(prev => prev.map(s => {
           const existing = scheduleMap.get(s.day_of_week);
           return existing ? {
             day_of_week: existing.day_of_week,
             is_active: existing.is_active,
-            start_time: existing.start_time,
-            end_time: existing.end_time,
+            start_time: existing.start_time.substring(0, 5),
+            end_time: existing.end_time.substring(0, 5),
           } : s;
         }));
       }

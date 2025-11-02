@@ -19,27 +19,32 @@ export const HomePage: React.FC = () => {
     try {
       const { data: companiesData, error: companiesError } = await supabase
         .from('companies')
-        .select('*')
+        .select(`
+          id,
+          name,
+          slug,
+          description,
+          logo_url,
+          category,
+          location_city,
+          location_country,
+          services (
+            id,
+            name,
+            description,
+            duration_minutes,
+            price,
+            currency
+          )
+        `)
         .eq('is_active', true)
         .order('created_at', { ascending: false })
         .limit(6);
 
       if (companiesError) throw companiesError;
 
-      const companiesWithServices = await Promise.all(
-        (companiesData || []).map(async (company) => {
-          const { data: services } = await supabase
-            .from('services')
-            .select('*')
-            .eq('company_id', company.id)
-            .eq('is_active', true)
-            .order('price');
-
-          return { ...company, services: services || [] };
-        })
-      );
-
-      setCompanies(companiesWithServices);
+      const filtered = (companiesData || []).filter(c => c.services.length > 0);
+      setCompanies(filtered);
     } catch (error) {
       console.error('Error loading companies:', error);
     } finally {

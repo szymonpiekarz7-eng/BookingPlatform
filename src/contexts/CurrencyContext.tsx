@@ -29,10 +29,11 @@ export const CurrencyProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     localStorage.setItem('currency', currency);
   }, [currency]);
 
-  const formatPrice = (price: number, priceCurrency?: Currency): string => {
+  const formatPrice = (price: number | string, priceCurrency?: Currency): string => {
     const curr = priceCurrency || currency;
     const symbol = currencySymbols[curr];
-    return `${price.toFixed(2)} ${symbol}`;
+    const numPrice = typeof price === 'string' ? parseFloat(price) : price;
+    return `${numPrice.toFixed(2)} ${symbol}`;
   };
 
   return (
